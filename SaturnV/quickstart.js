@@ -23,7 +23,6 @@ fs.readFile('client_secret.json', function processClientSecrets(err, content) {
   authorize(JSON.parse(content), listLabels);
 });
 
-
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
