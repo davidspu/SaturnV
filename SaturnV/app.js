@@ -45,33 +45,6 @@ app.use(session({
     saveUninitialized: true
 }));
 
-// Use the GoogleStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Google
-//   profile), and invoke a callback with a user object.
-passport.use(new GoogleStrategy({
-    clientID: GOOGLE_CLIENT_ID,
-    clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://www.example.com/auth/google/callback"
-  },
-  function(accessToken, refreshToken, profile, done) {
-       User.findOrCreate({ googleId: profile.id }, function (err, user) {
-         return done(err, user);
-       });
-  }
-));
-// //passport-facebook stuff
-// passport.use(new FacebookStrategy({
-//     clientID: process.env.FACEBOOK_CLIENT_ID,
-//     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-//     callbackURL: "http://localhost:3000/auth/facebook/callback"
-//   },
-//   function(accessToken, refreshToken, profile, cb) {
-//     User.findOrCreate({ facebookId: profile.id }, function (err, user) {
-//       return cb(err, user);
-//     });
-//   }
-// ));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -86,29 +59,20 @@ passport.deserializeUser(function(id, done) {
   });
 });
 
-// // passport strategy
-// passport.use(new LocalStrategy(function(username, password, done) {
-//     // Find the user with the given username
-//     User.findOne({ username: username }, function (err, user) {
-//       // if there's an error, finish trying to authenticate (auth failed)
-//       if (err) {
-//         console.error(err);
-//         return done(err);
-//       }
-//       // if no user present, auth failed
-//       if (!user) {
-//         console.log(user);
-//         return done(null, false, { message: 'Incorrect username.' });
-//       }
-//       // if passwords do not match, auth failed
-//       if (user.password !== password) {
-//         return done(null, false, { message: 'Incorrect password.' });
-//       }
-//       // auth has has succeeded
-//       return done(null, user);
-//     });
-//   }
-// ));
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    console.log(accessToken)
+    console.log(refreshToken)
+    console.log(profile)
+    User.findOrCreate({ googleId: profile.id }, function (err, user) {
+     return done(err, user);
+    });
+  }
+));
 
 app.use('/', auth(passport));
 app.use('/', routes);
