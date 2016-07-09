@@ -16,7 +16,7 @@ module.exports = function(passport) {
 	//   redirecting the user to google.com.  After authorization, Google
 	//   will redirect the user back to this application at /auth/google/callback
 	router.get('/auth/google',
-	  passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/gmail.readonly'] }));
+	  passport.authenticate('google', { scope: ['openid profile email https://mail.google.com/'] }));
 
 	// GET /auth/google/callback
 	//   Use passport.authenticate() as route middleware to authenticate the
