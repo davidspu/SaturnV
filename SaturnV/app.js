@@ -1,13 +1,21 @@
 var express = require('express');
+var session = require('express-session');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var passport = require('passport');
-var GoogleStrategy = require('passport-google-oauth')
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var MongoStore = require('connect-mongo')(session);
+var mongoose = require('mongoose');
+
+//routes
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var auth = require('./routes/auth');
+
+//models
+var User = require('./models/user');
 
 var app = express();
 
@@ -23,8 +31,87 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+var connect = process.env.MONGODB_URI || require('./models/connect');
+mongoose.connect(connect);
+
+// Passport stuff here
+
+app.use(session({
+    secret: process.env.SECRET,
+    // name: 'Catscoookie',
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    proxy: true,
+    resave: true,
+    saveUninitialized: true
+}));
+
+// Use the GoogleStrategy within Passport.
+//   Strategies in Passport require a `verify` function, which accept
+//   credentials (in this case, an accessToken, refreshToken, and Google
+//   profile), and invoke a callback with a user object.
+passport.use(new GoogleStrategy({
+    clientID: GOOGLE_CLIENT_ID,
+    clientSecret: GOOGLE_CLIENT_SECRET,
+    callbackURL: "http://www.example.com/auth/google/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+       User.findOrCreate({ googleId: profile.id }, function (err, user) {
+         return done(err, user);
+       });
+  }
+));
+// //passport-facebook stuff
+// passport.use(new FacebookStrategy({
+//     clientID: process.env.FACEBOOK_CLIENT_ID,
+//     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+//     callbackURL: "http://localhost:3000/auth/facebook/callback"
+//   },
+//   function(accessToken, refreshToken, profile, cb) {
+//     User.findOrCreate({ facebookId: profile.id }, function (err, user) {
+//       return cb(err, user);
+//     });
+//   }
+// ));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.serializeUser(function(user, done) {
+  done(null, user._id);
+});
+
+passport.deserializeUser(function(id, done) {
+  User.findById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+// // passport strategy
+// passport.use(new LocalStrategy(function(username, password, done) {
+//     // Find the user with the given username
+//     User.findOne({ username: username }, function (err, user) {
+//       // if there's an error, finish trying to authenticate (auth failed)
+//       if (err) {
+//         console.error(err);
+//         return done(err);
+//       }
+//       // if no user present, auth failed
+//       if (!user) {
+//         console.log(user);
+//         return done(null, false, { message: 'Incorrect username.' });
+//       }
+//       // if passwords do not match, auth failed
+//       if (user.password !== password) {
+//         return done(null, false, { message: 'Incorrect password.' });
+//       }
+//       // auth has has succeeded
+//       return done(null, user);
+//     });
+//   }
+// ));
+
+app.use('/', auth(passport));
 app.use('/', routes);
-app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
