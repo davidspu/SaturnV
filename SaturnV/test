@@ -1,0 +1,2 @@
+Authorize this app by visiting this url:  https://accounts.google.com/o/oauth2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.readonly&response_type=code&client_id=350821126452-jl0p9jufu113h4esnck2oco6gdmfkr0b.apps.googleusercontent.com&redirect_uri=urn%3Aietf%3Awg%3Aoauth%3A2.0%3Aoob
+Enter the code from that page here: 
