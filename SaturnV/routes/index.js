@@ -46,11 +46,11 @@ module.exports = function(gmail, authClient){
 		// });
 
 		var msgs = [];
-	  var parsedMsgs = [];
-	  var body = "";
+	  	var parsedMsgs = [];
+	  	var body = "";
 
 
-	  var watson = function(messageBody) {
+	  	var watson = function(messageBody) {
 	  		// console.log('watson');
 
 		// this function passes in a messageBody that represents the entire email history with a contact
@@ -76,15 +76,24 @@ module.exports = function(gmail, authClient){
 				        });
 				      }
 				        User.findByIdAndUpdate(req.user._id, {
-				        	console.log(this.contacts);
-				        	contacts: this.contacts.concat(contact)
 				        }, function(err, user){
+				        	console.log(user.contacts);
 				        	if(err){
 					          return res.status(400).render('error', {
 					          message: err
 					        });
 					      }
-					      return res.redirect('/');
+					      User.findByIdAndUpdate(req.user._id, {
+					      	contacts: user.contacts.concat(contact)
+					      }, function(err, user2){
+					      	if(err){
+						          return res.status(400).render('error', {
+						          message: err
+						        });
+						      }
+						      return res.redirect('/');
+					      });
+					      
 				        });
 		 			})
 		    })
@@ -105,12 +114,11 @@ module.exports = function(gmail, authClient){
 		        console.log('The API returned an error: ' + err);
 		        req.logout();
 		        return res.redirect('/logout');
-
+		       
 		      }
 		      // console.log(msgs);
 		      msgs = msgs.concat(response.messages);
 		      response.messages.forEach(function(item, i){
-            console.log('getting contact',i)
 		        setTimeout(function() {
 		          gmail.users.messages.get({
 		            auth: authClient,
@@ -143,12 +151,18 @@ module.exports = function(gmail, authClient){
 
 		mailparser.on("end", function(mail_object){
 			parsedMsgs.push(mail_object.text);
-			if (parsedMsgs.length === msgs.length) {
+			if(parsedMsgs.length === msgs.length){
 			  body = parsedMsgs.join(" ");
 			  watson(body);
 			}
+			// console.log(msgs.length);
+			// console.log("From:", mail_object.from); //[{address:'sender@example.com',name:'Sender Name'}]
+			// console.log("Subject:", mail_object.subject); // Hello world!
+			// console.log("Text body:", mail_object.text); // How are you today?
 		});
-		getMessages(null, function(messages){});
+
+		getMessages(null, function(messages){
+		});
 	});
 
 	//contact wall
@@ -158,32 +172,10 @@ module.exports = function(gmail, authClient){
 	});
 
 	router.get('/', function(req, res, next) {
-    console.log(req.user.contacts);
-    Contact.find({},function(err,response){
-      if (err) console.error(err);
-      var planets = [];
-  	  response.forEach(function(contact,i){
-        var score = Math.floor((Number(contact.score)+4)*50);
-  	    planets.push({
-  	      R: score,
-  	      r: 10,
-  	      name: contact.name,
-  	      speed: (7 - (i+1)*10 % 7) * (-1),
-  	      phi0: i*10+15,
-          moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
-  	    })
-  	  })
-  	  console.log(planets);
-  	  res.render('index', { planets:JSON.stringify(planets) });
-  	});
-    })
 
-<<<<<<< HEAD
     var planets = [];
     	User.findById(req.user.id, function(error, user){
-
-    	});
-	  user.contacts.forEach(function(contact,i){
+    		user.contacts.forEach(function(contact,i){
       console.log(contact.score);
 	    planets.push({
 	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 200 + 10 : (contact.score+2) * 200,
@@ -195,10 +187,9 @@ module.exports = function(gmail, authClient){
 	    })
 	  })
 	    console.log(planets);
-	  res.render('index', { planet:JSON.stringify(planets) });
+	  res.render('index', { planets:JSON.stringify(planets) });
+    	});
 	});
-=======
->>>>>>> acf894f4464105b9336667ffae5d69bfbf56d5d6
 
 	return router
 }
