@@ -15,9 +15,7 @@ var userSchema = mongoose.Schema({
   googleId: {
     type: String
   },
-  token: {
-    type: String
-  },
+  token: {},
   refresh: {
     type: String
   }

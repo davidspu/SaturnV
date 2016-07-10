@@ -76,20 +76,13 @@ var app = express();
     oauth2Client.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
-      });
-      console.log(oauth2Client)
-    gmail.users.messages.list({
-      auth: oauth2Client,
-      userId: 'me'
-    }, function(err, response) {
-      console.log(response)
     });
 
     User.findOrCreate({
       email: profile.emails[0].value,
       name: profile.displayName,
       googleId: profile.id,
-      token: accessToken,
+      token: oauth2Client,
       refresh: refreshToken
     }, function (err, user) {
       return done(err, user);
