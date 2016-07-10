@@ -102,7 +102,9 @@ module.exports = function(gmail, authClient){
 		  	// console.log(response);
 		      if (err) {
 		        console.log('The API returned an error: ' + err);
-		        return;
+		        req.logout();
+		        return res.redirect('/logout');
+		       
 		      }
 		      // console.log(msgs);
 		      msgs = msgs.concat(response.messages);
