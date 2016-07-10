@@ -49,7 +49,7 @@ module.exports = function(gmail, authClient){
 	  	var parsedMsgs = [];
 	  	var body = "";
 
-	  	
+
 	  	var watson = function(messageBody) {
 	  		console.log('watson');
 
@@ -59,10 +59,10 @@ module.exports = function(gmail, authClient){
 		    request.post({
 		    	url: 'https://watson-api-explorer.mybluemix.net/alchemy-api/calls/text/TextGetTextSentiment',
 		        form:{apikey: process.env.WATSON,
-		        outputMode: 'json', 
+		        outputMode: 'json',
 		        text: messageBody}},
 		        function(err, httpResponse, body) {
-		        	
+
 		            var score = JSON.parse(httpResponse.body).docSentiment.score;
 		            console.log(score);
 		 			var c = new Contact({
@@ -141,12 +141,12 @@ module.exports = function(gmail, authClient){
 			parsedMsgs.push(mail_object.text);
 			if(parsedMsgs.length === msgs.length){
 			  body = parsedMsgs.join(" ");
-			  watson(body); 
+			  watson(body);
 			}
 			// console.log(msgs.length);
-			// console.log("From:", mail_object.from); //[{address:'sender@example.com',name:'Sender Name'}] 
-			// console.log("Subject:", mail_object.subject); // Hello world! 
-			// console.log("Text body:", mail_object.text); // How are you today? 
+			// console.log("From:", mail_object.from); //[{address:'sender@example.com',name:'Sender Name'}]
+			// console.log("Subject:", mail_object.subject); // Hello world!
+			// console.log("Text body:", mail_object.text); // How are you today?
 		});
 
 		getMessages(null, function(messages){
@@ -160,13 +160,16 @@ module.exports = function(gmail, authClient){
 	});
 
 	router.get('/', function(req, res, next) {
-	  var planets = [];
-	  req.user.contacts.forEach(function(contact){
+
+    var planets = [];
+	  req.user.contacts.forEach(function(contact,i){
+      console.log(contact.score);
 	    planets.push({
-	      R: Math.pow((contacts.score + 2),2)*20,
-	      r: Math.pow((contacts.score + 2),2),
-	      speed: -5.00,
-	      phi0: 0
+	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 100 + 10 : (contact.score+2) * 100,
+	      r: (contact.score+2) * 4 < 1 ? 1 : (contact.score+2) * 4,
+	      speed: -10.0,
+	      phi0: 15,
+        moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
 	    })
 	  })
 	  res.render('index', { planet:JSON.stringify(planets) });

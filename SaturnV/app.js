@@ -77,7 +77,7 @@ var app = express();
     oauth2Client.setCredentials({
         access_token: accessToken,
         refresh_token: refreshToken
-<<<<<<< HEAD
+
       });
     //   console.log(oauth2Client)
     // gmail.users.messages.list({
@@ -86,9 +86,6 @@ var app = express();
     // }, function(err, response) {
     //   console.log(response)
     // });
-=======
-    });
->>>>>>> 0db394ff396a4b23d5bc2167a6881bca2d59d80e
 
     User.findOrCreate({
       email: profile.emails[0].value,
