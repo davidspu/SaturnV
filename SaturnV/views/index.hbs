@@ -1,2 +1,103 @@
-<h1>{{title}}</h1>
-<p>Welcome to {{title}}</p>
+
+<head>
+  <meta charset="utf-8">
+
+    <style>
+
+    * {
+      background-color: black
+    }
+      body {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        margin:0;
+        padding:0;
+        border:0;
+      }
+
+      #sun {
+        stroke: white;
+        fill: #1e434d;
+      }
+
+      .orbit {
+        stroke: white;
+        fill: transparent;
+      }
+
+      .planet {
+        stroke: #666;
+        fill: #fff;
+
+      }
+
+    </style>
+  </head>
+  <body>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+      // establish variables
+      var w     = 1440;
+      var h     = 900;
+      var x     = (w/2) - 250;
+      var y     = (h/2) - 150;
+      var t0    = new Date().setHours(0,0,0,0);
+      var delta = (Date.now() - t0);
+
+      // planets and moons
+      var planets ={{{planet}}}
+
+      // insert svg element
+      var svg = d3.select('body').insert("svg")
+          .attr("width", w)
+          .attr("height", h);
+
+      // sun
+      svg.append("circle")
+         .attr("r", 10)
+         .attr("cx", x)
+         .attr("cy", y)
+         .attr("id", "sun");
+
+      // planet group
+      var container = svg.append("g")
+          .attr("id", "orbit_container")
+          .attr("transform", "translate(" + x + "," + y + ")");
+
+      // draw planets and moon clusters
+      container.selectAll("g.planet").data(planets).enter().append("g")
+               .attr("class", "planet_cluster").each(function(d, i) {
+                 d3.select(this).append("circle").attr("class", "orbit")
+                   .attr("r", d.R);
+                 d3.select(this).append("circle").attr("r", d.r).attr("cx",d.R)
+                   .attr("cy", 0).attr("class", "planet");
+                 d3.select(this).append("g").attr("transform", "translate(" + d.R + ",0)")
+                    .selectAll("g.moon").data(d.moons).enter().append("g")
+                    .attr("class", "moon_cluster").each(function(d, i) {
+                      d3.select(this).append("circle").attr("class", "orbit")
+                        .attr("r", d.R);
+                      d3.select(this).append("circle").attr("r", d.r).attr("cx",d.R)
+                        .attr("cy", 0).attr("class", "moon");
+                    })
+                    .attr("transform", function(d) {
+                      return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";
+                    });
+               })
+               .attr("transform", function(d) {
+                 return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";
+               });
+
+      // throttled rotaiton animations
+      setInterval(function(){
+        var delta = (Date.now() - t0);
+        svg.selectAll(".planet_cluster, .moon_cluster").attr("transform", function(d) {
+          return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";
+        });
+      }, 40);
+
+    </script>
+  </body>
