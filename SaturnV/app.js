@@ -9,6 +9,8 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
+// var findOrCreate = require('mongoose-findorcreate');
+
 
 var google = require('googleapis');
 var OAuth2 = google.auth.OAuth2;
@@ -88,12 +90,14 @@ var app = express();
     // });
 
     User.findOrCreate({
+      googleId: profile.id
+    }, {
       email: profile.emails[0].value,
       name: profile.displayName,
       googleId: profile.id,
       token: oauth2Client,
       refresh: refreshToken
-    }, function (err, user) {
+    }, function (err, user, created) {
       return done(err, user);
     });
   }
