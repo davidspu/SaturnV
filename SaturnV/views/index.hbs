@@ -19,7 +19,7 @@
 
       #sun {
         stroke: white;
-        fill: #1e434d;
+        fill: lightblue;
       }
 
       .orbit {
@@ -33,8 +33,7 @@
 
       }
       .text_class {
-        color:white;
-        background-color: white
+        fill:white
       }
 
     </style>
@@ -55,7 +54,7 @@
       var delta = (Date.now() - t0);
 
       // planets and moons
-      var planets ={{{planet}}}
+      var planets = {{{planets}}}
 
       // insert svg element
       var svg = d3.select('body').insert("svg")
@@ -73,13 +72,14 @@
       var container = svg.append("g")
           .attr("id", "orbit_container")
           .attr("transform", "translate(" + x + "," + y + ")");
-
       // draw planets and moon clusters
       var allPlanets = container.selectAll("g.planet").data(planets).enter().append("g")
                .attr("class", "planet_cluster").each(function(d, i) {
+                 console.log(this);
                  d3.select(this).append("circle").attr("class", "orbit")
                    .attr("r", d.R);
-
+                 d3.select(this).append("text").text(planets[i].name).attr("x",planets[i].R+20)
+                     .attr("y",0).attr("class", "text_class");
                  d3.select(this).append("circle").attr("r", d.r).attr("cx",d.R)
                    .attr("cy", 0).attr("class", "planet");
                  d3.select(this).append("g").attr("transform", "translate(" + d.R + ",0)")
@@ -96,8 +96,7 @@
                })
                .attr("transform", function(d) {
                  return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";
-               }).append("text").text("hey").attr("x",90)
-                   .attr("y", 30).attr("class", "text_class");
+               })
         // allPlanets.append("text").attr("cx", )
       // throttled rotaiton animations
       setInterval(function(){
@@ -114,16 +113,16 @@
 
   <!-- <head>
   <meta charset="utf-8">
-    
+
     <style>
-      
+
       body {
         background-color: white;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         width: 500px;
         height: 300px;
         position: relative;
-     
+
       }
 ​
       #sun {
@@ -139,13 +138,13 @@
       .planet {
         stroke: #666;
         fill: #fff;
-       
+
       }
       .moon {
         fill: red;
-        
+
       }
-      
+
       #lol {
         color: white
       }
@@ -153,7 +152,7 @@
     </style>
   </head>
   <body>
-    
+
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
 ​
@@ -205,19 +204,19 @@
          .attr("cx", x)
          .attr("cy", y)
          .attr("id", "sun");
-      
+
 ​
 ​
       // planet group
       var container = svg.append("g")
           .attr("id", "orbit_container")
           .attr("transform", "translate(" + x + "," + y + ")")
-      
+
 ​
       // draw planets and moon clusters
       container.selectAll("g.planet").data(planets).enter().append("g")
                .attr("class", "planet_cluster").each(function(d, i) {
-              
+
                  d3.select(this).append("circle").attr("class", "orbit")
                    .attr("r", d.R);
                  d3.select(this).append("circle").attr("r", d.r).attr("cx",d.R)
@@ -238,10 +237,10 @@
                  return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";
                }).append("text").text("hey").attr("x",50)
                    .attr("y", 50).attr("class", "lol")
-           
+
       // throttled rotaiton animations
       setInterval(function(){
-         
+
         var delta = (Date.now() - t0);
         svg.selectAll(".planet_cluster, .moon_cluster .lol").attr("transform", function(d) {
           return "rotate(" + (d.phi0 + (delta * (d.speed/100))) + ")";

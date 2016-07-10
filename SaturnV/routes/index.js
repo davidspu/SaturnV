@@ -46,11 +46,11 @@ module.exports = function(gmail, authClient){
 		// });
 
 		var msgs = [];
-	  	var parsedMsgs = [];
-	  	var body = "";
+	  var parsedMsgs = [];
+	  var body = "";
 
 
-	  	var watson = function(messageBody) {
+	  var watson = function(messageBody) {
 	  		// console.log('watson');
 
 		// this function passes in a messageBody that represents the entire email history with a contact
@@ -107,6 +107,7 @@ module.exports = function(gmail, authClient){
 		      // console.log(msgs);
 		      msgs = msgs.concat(response.messages);
 		      response.messages.forEach(function(item, i){
+            console.log('getting contact',i)
 		        setTimeout(function() {
 		          gmail.users.messages.get({
 		            auth: authClient,
@@ -139,18 +140,12 @@ module.exports = function(gmail, authClient){
 
 		mailparser.on("end", function(mail_object){
 			parsedMsgs.push(mail_object.text);
-			if(parsedMsgs.length === msgs.length){
+			if (parsedMsgs.length === msgs.length) {
 			  body = parsedMsgs.join(" ");
 			  watson(body);
 			}
-			// console.log(msgs.length);
-			// console.log("From:", mail_object.from); //[{address:'sender@example.com',name:'Sender Name'}]
-			// console.log("Subject:", mail_object.subject); // Hello world!
-			// console.log("Text body:", mail_object.text); // How are you today?
 		});
-
-		getMessages(null, function(messages){
-		});
+		getMessages(null, function(messages){});
 	});
 
 	//contact wall
@@ -163,18 +158,20 @@ module.exports = function(gmail, authClient){
 
     var planets = [];
 	  req.user.contacts.forEach(function(contact,i){
-      console.log(contact.score);
+      console.log(Number(contact.score))
+      var score = Math.floor(Number(contact.score)*100);
+      console.log(score);
 	    planets.push({
-	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 200 + 10 : (contact.score+2) * 200,
+	      R: score+100,
 	      r: 10,
 	      name: contact.name,
-	      speed: -10.0,
-	      phi0: 15,
+	      speed: (7 - (i+1)*10 % 7) * (-1),
+	      phi0: i*10+15,
         moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
 	    })
 	  })
-	    console.log(planets);
-	  res.render('index', { planet:JSON.stringify(planets) });
+	  console.log(planets);
+	  res.render('index', { planets:JSON.stringify(planets) });
 	});
 
 	return router
