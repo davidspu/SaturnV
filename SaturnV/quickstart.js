@@ -1,5 +1,3 @@
-
-
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
@@ -9,7 +7,7 @@ var _ = require('underscore');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/gmail-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+var SCOPES = ['https://www.gmail.com'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'gmail-nodejs-quickstart.json';
@@ -106,7 +104,7 @@ function storeToken(token) {
  */
 function listLabels(auth) {
 
-
+  console.log(auth);
   var gmail = google.gmail('v1');
   gmail.users.messages.list({
     auth: auth,
@@ -120,6 +118,7 @@ function listLabels(auth) {
       gmail.users.messages.get({
         auth: auth,
         userId: 'me',
+
         id:item.id
       },function(err,response){
         var body;
@@ -131,33 +130,16 @@ function listLabels(auth) {
             body = response.payload.parts[0].body.data;
             break;
           case "multipart/mixed":
-            body = response.payload.parts[0].body.data;
+            body = null;
             break;
           default:
             body = response.payload.body.data;
         }
-        var parsed
-        try {
-          parsed = base64url.decode(body)
-        } catch (err) {
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(item.id)
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(err);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response.payload.parts[0].body);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response.payload.parts[1].body);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        if (body) {
+          console.log(base64url.decode(body));
         }
-        // console.log(base64url.decode(body));
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        console.log('------------------------------------------------------------------------')
       })
     })
 
