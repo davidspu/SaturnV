@@ -17,6 +17,9 @@ var userSchema = mongoose.Schema({
   },
   token: {
     type: String
+  },
+  refresh: {
+    type: String
   }
 });
 
