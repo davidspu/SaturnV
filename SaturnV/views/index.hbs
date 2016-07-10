@@ -5,7 +5,7 @@
     <style>
 
     * {
-      background-color: black
+      background-color: black;
     }
       body {
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -39,20 +39,19 @@
     </style>
   </head>
   <body>
-  <div style="width:100%; text-align: right; margin-top: 15px">
-      <a href="/logout" style='text-decoration:none; color:white; margin-bottom: 15px; margin-right: 15px'>Log Out</a>
-    </div>
-    <div style="width:100%; text-align: right; margin-top: 15px">
-        <a href="/contact" style='text-decoration:none; color:white; margin-bottom: 15px; margin-right: 15px'>Add Contact</a>
-      </div>
+
+    <a href="/logout" style='position:fixed; right:20px; top:20px; text-decoration:none; color:white; margin-bottom: 15px; margin-right: 15px;background:transparent'>Log Out</a>
+
+    <a href="/contact" style='position:fixed; right:20px; top:50px; text-decoration:none; color:white; margin-bottom: 15px; margin-right: 15px;background:transparent'>Add Contact</a>
+
     <script src="http://d3js.org/d3.v3.min.js"></script>
     <script>
 
       // establish variables
       var w     = 1440;
       var h     = 900;
-      var x     = (w/2) - 250;
-      var y     = (h/2) - 150;
+      var x     = (w/2);
+      var y     = (h/2) - 100;
       var t0    = new Date().setHours(0,0,0,0);
       var delta = (Date.now() - t0);
 
@@ -111,5 +110,3 @@
 
     </script>
   </body>
-
-

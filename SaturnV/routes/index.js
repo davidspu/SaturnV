@@ -175,10 +175,7 @@ module.exports = function(gmail, authClient){
     var planets = [];
     	User.findById(req.user.id, function(error, user){
     		user.contacts.forEach(function(contact,i){
-          console.log('_____++++++++')
-          console.log(contact.score)
-          console.log('_____++++++++')
-      var score = Math.floor((50-(Number(contact.score)+2)*15))*8+30;
+      var score = Math.floor((50-(Number(contact.score)+2)*15))*7+20;
       var speed = -Number(contact.score)*7;
       if (speed > 7) {
         speed = 7;
