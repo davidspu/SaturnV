@@ -64,7 +64,7 @@ module.exports = function(gmail, authClient){
 		        function(err, httpResponse, body) {
 
 		            var score = JSON.parse(httpResponse.body).docSentiment.score;
-		            // console.log(score);
+		            console.log(score);
 		 			var c = new Contact({
 		 				email: req.body.email,
 		 				name: req.body.name,
@@ -75,8 +75,7 @@ module.exports = function(gmail, authClient){
 				          message: err
 				        });
 				      }
-				        User.findByIdAndUpdate(req.user._id, {
-				        }, function(err, user){
+				        User.findById(req.user._id, function(err, user){
 				        	console.log(user.contacts);
 				        	if(err){
 					          return res.status(400).render('error', {
@@ -93,7 +92,7 @@ module.exports = function(gmail, authClient){
 						      }
 						      return res.redirect('/');
 					      });
-					      
+
 				        });
 		 			})
 		    })
@@ -114,7 +113,7 @@ module.exports = function(gmail, authClient){
 		        console.log('The API returned an error: ' + err);
 		        req.logout();
 		        return res.redirect('/logout');
-		       
+
 		      }
 		      // console.log(msgs);
 		      msgs = msgs.concat(response.messages);
@@ -176,17 +175,26 @@ module.exports = function(gmail, authClient){
     var planets = [];
     	User.findById(req.user.id, function(error, user){
     		user.contacts.forEach(function(contact,i){
-      console.log(contact.score);
+          console.log('_____++++++++')
+          console.log(contact.score)
+          console.log('_____++++++++')
+      var score = Math.floor((50-(Number(contact.score)+2)*15))*8+30;
+      var speed = -Number(contact.score)*7;
+      if (speed > 7) {
+        speed = 7;
+      } else if (speed < -7) {
+        speed = -7;
+      }
 	    planets.push({
-	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 200 + 10 : (contact.score+2) * 200,
+	      R: score,
 	      r: 10,
 	      name: contact.name,
-	      speed: -10.0,
-	      phi0: 15,
+	      speed: speed,
+	      phi0: (i+2)*15,
         moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
 	    })
 	  })
-	    console.log(planets);
+	    // console.log(planets);
 	  res.render('index', { planets:JSON.stringify(planets) });
     	});
 	});
