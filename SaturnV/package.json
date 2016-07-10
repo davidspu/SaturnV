@@ -15,6 +15,8 @@
     "googleapis": "^10.0.0",
     "hbs": "~3.1.0",
     "mongoose": "^4.5.3",
+    "mongoose-find-one-or-create": "^0.2.0",
+    "mongoose-findorcreate": "^0.1.2",
     "morgan": "~1.6.1",
     "passport": "^0.3.2",
     "passport-google-oauth": "^1.0.0",
