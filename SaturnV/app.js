@@ -72,32 +72,15 @@ passport.use(new GoogleStrategy({
     console.log(refreshToken);
     console.log('+++++++++++++++++++++++++++++++')
     console.log(profile)
-
-      var gmail = google.gmail('v1');
-      gmail.users.labels.list({
-        auth: accessToken,
-        userId: 'me',
-      }, function(err, response) {
-        if (err) {
-          console.log('The API returned an error: ' + err);
-          return;
-        }
-        var labels = response.labels;
-        if (labels.length == 0) {
-          console.log('No labels found.');
-        } else {
-          console.log('Labels:');
-          for (var i = 0; i < labels.length; i++) {
-            var label = labels[i];
-            console.log('- %s', label.name);
-          }
-        }
-      });
-
-
-    // User.findOrCreate({ googleId: profile.id }, function (err, user) {
-    //  return done(err, user);
-    // });
+    User.findOrCreate({
+      email: profile.emails[0].value,
+      name: profile.displayName,
+      googleId: profile.id,
+      token: accessToken,
+      refresh: refreshToken
+      }, function (err, user) {
+     return done(err, user);
+    });
   }
 ));
 
