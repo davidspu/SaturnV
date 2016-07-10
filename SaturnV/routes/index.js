@@ -76,7 +76,8 @@ module.exports = function(gmail, authClient){
 				        });
 				      }
 				        User.findByIdAndUpdate(req.user._id, {
-				        	contacts: req.user.contacts.concat(contact)
+				        	console.log(this.contacts);
+				        	contacts: this.contacts.concat(contact)
 				        }, function(err, user){
 				        	if(err){
 					          return res.status(400).render('error', {
@@ -164,7 +165,10 @@ module.exports = function(gmail, authClient){
 	router.get('/', function(req, res, next) {
 
     var planets = [];
-	  req.user.contacts.forEach(function(contact,i){
+    	User.findById(req.user.id, function(error, user){
+
+    	});
+	  user.contacts.forEach(function(contact,i){
       console.log(contact.score);
 	    planets.push({
 	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 200 + 10 : (contact.score+2) * 200,
