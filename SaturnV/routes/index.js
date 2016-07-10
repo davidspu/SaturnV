@@ -163,8 +163,8 @@ module.exports = function(gmail, authClient){
 	  var planets = [];
 	  req.user.contacts.forEach(function(contact){
 	    planets.push({
-	      R: Math.pow((contacts.score + 2),2)*20,
-	      r: Math.pow((contacts.score + 2),2),
+	      R: Math.pow((contact.score + 2),2)*20,
+	      r: Math.pow((contact.score + 2),2),
 	      speed: -5.00,
 	      phi0: 0
 	    })
