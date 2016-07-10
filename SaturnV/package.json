@@ -13,6 +13,8 @@
     "debug": "~2.2.0",
     "express": "~4.13.1",
     "express-session": "^1.14.0",
+    "google": "^2.0.0",
+    "google-auth-library": "^0.9.8",
     "googleapis": "^10.0.0",
     "hbs": "~3.1.0",
     "mailparser": "^0.6.1",

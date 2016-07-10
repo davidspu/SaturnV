@@ -122,47 +122,55 @@ function listLabels(auth) {
 
 var gmail = google.gmail('v1');
 function getMessages(nextPage, callback) {
-  gmail.users.messages.list({
-    auth: auth,
-    userId: 'me',
-    pageToken: nextPage,
-    q: "from:crisllop24@gmail.com to:crisllop24@gmail.com"
-  }, function(err, response) {
-      if (err) {
-        console.log('The API returned an error: ' + err);
-        return;
-      }
-      // console.log(msgs);
-      msgs = msgs.concat(response.messages);
-      response.messages.forEach(function(item, i){
-        setTimeout(function() {
-          gmail.users.messages.get({
-            auth: auth,
-            userId: 'me',
-            // from: "crisllop24@gmail.com",
-            id:item.id,
-            format: "raw"
-          },function(err,response){
-            // console.log(response.raw);
-            var isSomething = (response !== null)
-            // console.log(i, isSomething)
-            if (!isSomething) {
-              console.log(err);
-            }
-            // send the email source to the parser
-            if(response){
-              mailparser.write(base64url.decode(response.raw));
-              mailparser.end();
-            }
-          })
-        }, i * 20);
-      });
-      if(response.nextPageToken){
-        return getMessages(response.nextPageToken, callback);
-      } else {
-        return callback(msgs);
-      }
-  })
+
+    gmail.users.messages.list({
+      auth: req.user.token,
+      userId: 'me'
+    }, function(err, response) {
+      console.log(response)
+    });
+
+  // gmail.users.messages.list({
+  //   auth: auth,
+  //   userId: 'me',
+  //   pageToken: nextPage,
+  //   q: "from:crisllop24@gmail.com to:crisllop24@gmail.com"
+  // }, function(err, response) {
+  //     if (err) {
+  //       console.log('The API returned an error: ' + err);
+  //       return;
+  //     }
+  //     // console.log(msgs);
+  //     msgs = msgs.concat(response.messages);
+  //     response.messages.forEach(function(item, i){
+  //       setTimeout(function() {
+  //         gmail.users.messages.get({
+  //           auth: auth,
+  //           userId: 'me',
+  //           // from: "crisllop24@gmail.com",
+  //           id:item.id,
+  //           format: "raw"
+  //         },function(err,response){
+  //           // console.log(response.raw);
+  //           var isSomething = (response !== null)
+  //           // console.log(i, isSomething)
+  //           if (!isSomething) {
+  //             console.log(err);
+  //           }
+  //           // send the email source to the parser
+  //           if(response){
+  //             mailparser.write(base64url.decode(response.raw));
+  //             mailparser.end();
+  //           }
+  //         })
+  //       }, i * 20);
+  //     });
+  //     if(response.nextPageToken){
+  //       return getMessages(response.nextPageToken, callback);
+  //     } else {
+  //       return callback(msgs);
+  //     }
+  // })
 }
 
 getMessages(null, function(messages){

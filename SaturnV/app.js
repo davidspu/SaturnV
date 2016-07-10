@@ -11,10 +11,11 @@ var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
 
 var google = require('googleapis');
-var gmail = google.gmail('v1');
 var OAuth2 = google.auth.OAuth2;
 var oauth2Client = new OAuth2(process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET, "http://localhost:3000/auth/google/callback");
+google.options({ auth: oauth2Client });
+var gmail = google.gmail('v1', {auth: oauth2Client });
 
 var base64url = require('base64url')
 var _ = require('underscore');
@@ -77,19 +78,19 @@ var app = express();
         access_token: accessToken,
         refresh_token: refreshToken
       });
-      console.log(oauth2Client)
-    gmail.users.messages.list({
-      auth: oauth2Client,
-      userId: 'me'
-    }, function(err, response) {
-      console.log(response)
-    });
+    //   console.log(oauth2Client)
+    // gmail.users.messages.list({
+    //   auth: oauth2Client,
+    //   userId: 'me'
+    // }, function(err, response) {
+    //   console.log(response)
+    // });
 
     User.findOrCreate({
       email: profile.emails[0].value,
       name: profile.displayName,
       googleId: profile.id,
-      token: accessToken,
+      token: oauth2Client,
       refresh: refreshToken
     }, function (err, user) {
       return done(err, user);
@@ -98,7 +99,7 @@ var app = express();
 ));
 
 app.use('/', auth(passport));
-app.use('/', routes);
+app.use('/', routes(gmail, oauth2Client));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -7,16 +7,16 @@ var contactSchema = mongoose.Schema({
   },
   emails: {
     type: Array
-  }
+  },
   name: {
     type: String
   },
   milestones: {
   	type: Array
   },
-  sentiment: {
+  score: {
     type: String
   }
 });
 
-module.exports = contact.model('Contact', contactSchema)
+module.exports = mongoose.model('Contact', contactSchema)

@@ -31,14 +31,14 @@ module.exports = function(passport) {
 	    res.redirect('/');
 	  });
 
-	  // GET Login page
-	  router.get('/login', function(req, res) {
-	    if(req.user){
-	      res.redirect('/');
-	      return
-	    }
-	    res.render('login');
-	  });
+  // GET Login page
+  router.get('/login', function(req, res) {
+    if(req.user){
+      res.redirect('/');
+      return;
+    }
+    res.render('login');
+  });
 
   // GET Logout page
   router.get('/logout', function(req, res) {
