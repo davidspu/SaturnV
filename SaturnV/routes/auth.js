@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user');
+var google = require('googleapis');
+var OAuth2 = google.auth.OAuth2;
 
 // function randomCode() {
 //   var min = 1000;

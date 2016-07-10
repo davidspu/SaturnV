@@ -9,7 +9,7 @@ var mailparser = new MailParser();
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/gmail-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+var SCOPES = ['https://www.gmail.com'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'gmail-nodejs-quickstart.json';
@@ -165,71 +165,7 @@ function getMessages(nextPage, callback) {
   })
 }
 
-
-
 getMessages(null, function(messages){
-  // console.log(messages);
-  // msgs.forEach(function(item, i){
-  //   setTimeout(function() {
-  //     gmail.users.messages.get({
-  //       auth: auth,
-  //       userId: 'me',
-  //       // from: "crisllop24@gmail.com",
-  //       id:item.id,
-  //       format: "raw"
-  //     },function(err,response){
-  //       // console.log(response.raw);
-  //       var isSomething = (response !== null)
-  //       // console.log(i, isSomething)
-  //       if (!isSomething) {
-  //         console.log(err);
-  //       }
-  //       // send the email source to the parser
-  //       if(response){
-  //         mailparser.write(base64url.decode(response.raw));
-  //         mailparser.end();
-  //       }
-  //     })
-  //   }, i * 20);
-  // });
 });
 
-
-  // // var gmail = google.gmail('v1');
-  // gmail.users.messages.list({
-  //   auth: auth,
-  //   userId: 'me'
-  //   // q: "to:push0216@gmail.com"
-  // }, function(err, response) {
-  //   if (err) {
-  //     console.log('The API returned an error: ' + err);
-  //     return;
-  //   }
-  //   //console.log(response.messages);
-  //   console.log("RESPONSE NUM", response.nextPageToken);
-  //   response.messages.forEach(function(item, i){
-  //     setTimeout(function() {
-  //       gmail.users.messages.get({
-  //         auth: auth,
-  //         userId: 'me',
-  //         // from: "no-reply@twitch.tv",
-  //         id:item.id,
-  //         format: "raw"
-  //       },function(err,response){
-  //         // console.log(response.raw);
-  //         var isSomething = (response !== null)
-  //         console.log(i, isSomething)
-  //         if (!isSomething) {
-  //           console.log(err);
-  //         }
-  //         // send the email source to the parser
-  //         if(response){
-  //           mailparser.write(base64url.decode(response.raw));
-  //           mailparser.end();
-
-  //         }
-  //       })
-  //     }, i * 20);
-  //     })
-  // });
 }
