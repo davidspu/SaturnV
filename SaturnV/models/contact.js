@@ -6,8 +6,7 @@ var contactSchema = mongoose.Schema({
     required: true
   },
   emails: {
-    type: Array,
-    required: true
+    type: Array
   }
   name: {
     type: String

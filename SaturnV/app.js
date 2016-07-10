@@ -9,7 +9,6 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
-var google = require('googleapis');
 
 //routes
 var routes = require('./routes/index');

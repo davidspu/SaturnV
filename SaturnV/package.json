@@ -15,6 +15,7 @@
     "express-session": "^1.14.0",
     "googleapis": "^10.0.0",
     "hbs": "~3.1.0",
+    "mailparser": "^0.6.1",
     "mongoose": "^4.5.3",
     "mongoose-find-one-or-create": "^0.2.0",
     "mongoose-findorcreate": "^0.1.2",

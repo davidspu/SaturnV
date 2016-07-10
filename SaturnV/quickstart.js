@@ -1,11 +1,11 @@
-
-
 var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
 var base64url = require('base64url')
 var _ = require('underscore');
+var MailParser = require("mailparser").MailParser;
+var mailparser = new MailParser();
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/gmail-nodejs-quickstart.json
@@ -106,61 +106,130 @@ function storeToken(token) {
  */
 function listLabels(auth) {
 
+  var msgs = [];
+  var parsedMsgs = [];
 
-  var gmail = google.gmail('v1');
+  mailparser.on("end", function(mail_object){
+    parsedMsgs.push(mail_object);
+    if(parsedMsgs.length === msgs.length){
+      console.log(parsedMsgs);
+    }
+    // console.log(msgs.length);
+    // console.log("From:", mail_object.from); //[{address:'sender@example.com',name:'Sender Name'}] 
+    // console.log("Subject:", mail_object.subject); // Hello world! 
+    // console.log("Text body:", mail_object.text); // How are you today? 
+  });
+
+var gmail = google.gmail('v1');
+function getMessages(nextPage, callback) {
   gmail.users.messages.list({
     auth: auth,
-    userId: 'me'
+    userId: 'me',
+    pageToken: nextPage,
+    q: "from:crisllop24@gmail.com to:crisllop24@gmail.com"
   }, function(err, response) {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    }
-    response.messages.forEach(function(item){
-      gmail.users.messages.get({
-        auth: auth,
-        userId: 'me',
-        id:item.id
-      },function(err,response){
-        var body;
-        switch (response.payload.mimeType) {
-          case "text/plain":
-            body = response.payload.body.data;
-            break;
-          case "multipart/alternative":
-            body = response.payload.parts[0].body.data;
-            break;
-          case "multipart/mixed":
-            body = response.payload.parts[0].body.data;
-            break;
-          default:
-            body = response.payload.body.data;
-        }
-        var parsed
-        try {
-          parsed = base64url.decode(body)
-        } catch (err) {
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(item.id)
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(err);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response.payload.parts[0].body);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-          console.log(response.payload.parts[1].body);
-          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        }
-        // console.log(base64url.decode(body));
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
-      })
-    })
+      if (err) {
+        console.log('The API returned an error: ' + err);
+        return;
+      }
+      // console.log(msgs);
+      msgs = msgs.concat(response.messages);
+      response.messages.forEach(function(item, i){
+        setTimeout(function() {
+          gmail.users.messages.get({
+            auth: auth,
+            userId: 'me',
+            // from: "crisllop24@gmail.com",
+            id:item.id,
+            format: "raw"
+          },function(err,response){
+            // console.log(response.raw);
+            var isSomething = (response !== null)
+            // console.log(i, isSomething)
+            if (!isSomething) {
+              console.log(err);
+            }
+            // send the email source to the parser
+            if(response){
+              mailparser.write(base64url.decode(response.raw));
+              mailparser.end();
+            }
+          })
+        }, i * 20);
+      });
+      if(response.nextPageToken){
+        return getMessages(response.nextPageToken, callback);
+      } else {
+        return callback(msgs);
+      }
+  })
+}
 
 
-  });
+
+getMessages(null, function(messages){
+  // console.log(messages);
+  // msgs.forEach(function(item, i){
+  //   setTimeout(function() {
+  //     gmail.users.messages.get({
+  //       auth: auth,
+  //       userId: 'me',
+  //       // from: "crisllop24@gmail.com",
+  //       id:item.id,
+  //       format: "raw"
+  //     },function(err,response){
+  //       // console.log(response.raw);
+  //       var isSomething = (response !== null)
+  //       // console.log(i, isSomething)
+  //       if (!isSomething) {
+  //         console.log(err);
+  //       }
+  //       // send the email source to the parser
+  //       if(response){
+  //         mailparser.write(base64url.decode(response.raw));
+  //         mailparser.end();
+  //       }
+  //     })
+  //   }, i * 20);
+  // });
+});
+
+
+  // // var gmail = google.gmail('v1');
+  // gmail.users.messages.list({
+  //   auth: auth,
+  //   userId: 'me'
+  //   // q: "to:push0216@gmail.com"
+  // }, function(err, response) {
+  //   if (err) {
+  //     console.log('The API returned an error: ' + err);
+  //     return;
+  //   }
+  //   //console.log(response.messages);
+  //   console.log("RESPONSE NUM", response.nextPageToken);
+  //   response.messages.forEach(function(item, i){
+  //     setTimeout(function() {
+  //       gmail.users.messages.get({
+  //         auth: auth,
+  //         userId: 'me',
+  //         // from: "no-reply@twitch.tv",
+  //         id:item.id,
+  //         format: "raw"
+  //       },function(err,response){
+  //         // console.log(response.raw);
+  //         var isSomething = (response !== null)
+  //         console.log(i, isSomething)
+  //         if (!isSomething) {
+  //           console.log(err);
+  //         }
+  //         // send the email source to the parser
+  //         if(response){
+  //           mailparser.write(base64url.decode(response.raw));
+  //           mailparser.end();
+
+  //         }
+  //       })
+  //     }, i * 20);
+  //     })
+  // });
 }
