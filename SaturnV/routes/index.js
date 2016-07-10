@@ -25,7 +25,7 @@ var scopes = [
 ]
 
 module.exports = function(gmail, authClient){
-	console.log(gmail);
+	// console.log(gmail);
 
 	router.use(function(req,res,next){
 	  if (req.user) return next();
@@ -51,7 +51,7 @@ module.exports = function(gmail, authClient){
 
 
 	  	var watson = function(messageBody) {
-	  		console.log('watson');
+	  		// console.log('watson');
 
 		// this function passes in a messageBody that represents the entire email history with a contact
 		// and returns a sentiment score for that contact=
@@ -64,7 +64,7 @@ module.exports = function(gmail, authClient){
 		        function(err, httpResponse, body) {
 
 		            var score = JSON.parse(httpResponse.body).docSentiment.score;
-		            console.log(score);
+		            // console.log(score);
 		 			var c = new Contact({
 		 				email: req.body.email,
 		 				name: req.body.name,
@@ -90,7 +90,7 @@ module.exports = function(gmail, authClient){
 		}
 
 		function getMessages(nextPage, callback) {
-			console.log('getMsg');
+			// console.log('getMsg');
 		  gmail.users.messages.list({
 		    // auth: req.user.token,
 		    auth: authClient,
@@ -98,8 +98,8 @@ module.exports = function(gmail, authClient){
 		    pageToken: nextPage,
 		    q: "from:" + req.body.email + " OR to:" + req.body.email
 		  }, function(err, response) {
-		  	console.log(err);
-		  	console.log(response);
+		  	// console.log(err);
+		  	// console.log(response);
 		      if (err) {
 		        console.log('The API returned an error: ' + err);
 		        return;
@@ -165,13 +165,15 @@ module.exports = function(gmail, authClient){
 	  req.user.contacts.forEach(function(contact,i){
       console.log(contact.score);
 	    planets.push({
-	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 100 + 10 : (contact.score+2) * 100,
-	      r: (contact.score+2) * 4 < 1 ? 1 : (contact.score+2) * 4,
+	      R: (contact.score+2) * 100 < 10 ? (contact.score+2) * 200 + 10 : (contact.score+2) * 200,
+	      r: 10,
+	      name: contact.name,
 	      speed: -10.0,
 	      phi0: 15,
         moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
 	    })
 	  })
+	    console.log(planets);
 	  res.render('index', { planet:JSON.stringify(planets) });
 	});
 
