@@ -4,6 +4,8 @@ var fs = require('fs');
 var readline = require('readline');
 var google = require('googleapis');
 var googleAuth = require('google-auth-library');
+var base64url = require('base64url')
+var _ = require('underscore');
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/gmail-nodejs-quickstart.json
@@ -103,24 +105,62 @@ function storeToken(token) {
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
 function listLabels(auth) {
+
+
   var gmail = google.gmail('v1');
-  gmail.users.labels.list({
+  gmail.users.messages.list({
     auth: auth,
-    userId: 'me',
+    userId: 'me'
   }, function(err, response) {
     if (err) {
       console.log('The API returned an error: ' + err);
       return;
     }
-    var labels = response.labels;
-    if (labels.length == 0) {
-      console.log('No labels found.');
-    } else {
-      console.log('Labels:');
-      for (var i = 0; i < labels.length; i++) {
-        var label = labels[i];
-        console.log('- %s', label.name);
-      }
-    }
+    response.messages.forEach(function(item){
+      gmail.users.messages.get({
+        auth: auth,
+        userId: 'me',
+        id:item.id
+      },function(err,response){
+        var body;
+        switch (response.payload.mimeType) {
+          case "text/plain":
+            body = response.payload.body.data;
+            break;
+          case "multipart/alternative":
+            body = response.payload.parts[0].body.data;
+            break;
+          case "multipart/mixed":
+            body = response.payload.parts[0].body.data;
+            break;
+          default:
+            body = response.payload.body.data;
+        }
+        var parsed
+        try {
+          parsed = base64url.decode(body)
+        } catch (err) {
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+          console.log(item.id)
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+          console.log(err);
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+          console.log(response);
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+          console.log(response.payload.parts[0].body);
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+          console.log(response.payload.parts[1].body);
+          console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        }
+        // console.log(base64url.decode(body));
+        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+        // console.log('+++++++++++++++++++++++++++++++++++++++++++++')
+      })
+    })
+
+
   });
 }

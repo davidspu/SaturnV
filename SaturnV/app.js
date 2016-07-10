@@ -9,6 +9,7 @@ var passport = require('passport');
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 var MongoStore = require('connect-mongo')(session);
 var mongoose = require('mongoose');
+var google = require('googleapis');
 
 //routes
 var routes = require('./routes/index');
@@ -65,12 +66,38 @@ passport.use(new GoogleStrategy({
     callbackURL: "http://localhost:3000/auth/google/callback"
   },
   function(accessToken, refreshToken, profile, done) {
-    console.log(accessToken)
-    console.log(refreshToken)
+    console.log('+++++++++++++++++++++++++++++++')
+    console.log(accessToken);
+    console.log('+++++++++++++++++++++++++++++++')
+    console.log(refreshToken);
+    console.log('+++++++++++++++++++++++++++++++')
     console.log(profile)
-    User.findOrCreate({ googleId: profile.id }, function (err, user) {
-     return done(err, user);
-    });
+
+      var gmail = google.gmail('v1');
+      gmail.users.labels.list({
+        auth: accessToken,
+        userId: 'me',
+      }, function(err, response) {
+        if (err) {
+          console.log('The API returned an error: ' + err);
+          return;
+        }
+        var labels = response.labels;
+        if (labels.length == 0) {
+          console.log('No labels found.');
+        } else {
+          console.log('Labels:');
+          for (var i = 0; i < labels.length; i++) {
+            var label = labels[i];
+            console.log('- %s', label.name);
+          }
+        }
+      });
+
+
+    // User.findOrCreate({ googleId: profile.id }, function (err, user) {
+    //  return done(err, user);
+    // });
   }
 ));
 
