@@ -104,7 +104,7 @@ module.exports = function(gmail, authClient){
 		        console.log('The API returned an error: ' + err);
 		        req.logout();
 		        return res.redirect('/logout');
-		       
+
 		      }
 		      // console.log(msgs);
 		      msgs = msgs.concat(response.messages);
@@ -157,24 +157,26 @@ module.exports = function(gmail, authClient){
 	});
 
 	router.get('/', function(req, res, next) {
+    console.log(req.user.contacts);
+    Contact.find({},function(err,response){
+      if (err) console.error(err);
+      var planets = [];
+  	  response.forEach(function(contact,i){
+        var score = Math.floor((Number(contact.score)+4)*50);
+  	    planets.push({
+  	      R: score,
+  	      r: 10,
+  	      name: contact.name,
+  	      speed: (7 - (i+1)*10 % 7) * (-1),
+  	      phi0: i*10+15,
+          moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
+  	    })
+  	  })
+  	  console.log(planets);
+  	  res.render('index', { planets:JSON.stringify(planets) });
+  	});
+    })
 
-    var planets = [];
-	  req.user.contacts.forEach(function(contact,i){
-      console.log(Number(contact.score))
-      var score = Math.floor(Number(contact.score)*100);
-      console.log(score);
-	    planets.push({
-	      R: score+100,
-	      r: 10,
-	      name: contact.name,
-	      speed: (7 - (i+1)*10 % 7) * (-1),
-	      phi0: i*10+15,
-        moons:[{ R: 1, r:   1, speed: -0.10, phi0:  10 } ]
-	    })
-	  })
-	  console.log(planets);
-	  res.render('index', { planets:JSON.stringify(planets) });
-	});
 
 	return router
 }
