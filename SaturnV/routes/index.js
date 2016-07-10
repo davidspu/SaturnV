@@ -12,6 +12,7 @@ var _ = require('underscore');
 var MailParser = require("mailparser").MailParser;
 var mailparser = new MailParser();
 
+
 // var OAuth2 = google.auth.OAuth2;
 // var oauth2Client = new OAuth2(
 // 	process.env.GOOGLE_CLIENT_ID,
@@ -159,8 +160,16 @@ module.exports = function(gmail, authClient){
 	});
 
 	router.get('/', function(req, res, next) {
-		console.log("Entered index");
-	  res.render('index', { title: 'Express' });
+	  var planets = [];
+	  req.user.contacts.forEach(function(contact){
+	    planets.push({
+	      R: Math.pow((contacts.score + 2),2)*20,
+	      r: Math.pow((contacts.score + 2),2),
+	      speed: -5.00,
+	      phi0: 0
+	    })
+	  })
+	  res.render('index', { planet:JSON.stringify(planets) });
 	});
 
 	return router
